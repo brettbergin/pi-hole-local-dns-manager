@@ -5,22 +5,18 @@ import os
 import sys
 
 
-from pihole_dns.config import Logging, Config
-from pihole_dns.cluster import ClusterManager
-
-logger = Logging(here=os.path.dirname(os.path.abspath(__file__))).create_logging()
-config = Config()
-ssh = config.sshconfig
+from pihole_manager.config import Logging, Config
+from pihole_manager.cluster import ClusterManager
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="add-dns-record.")
+    parser = argparse.ArgumentParser(description="SSH Client to Manage Pi Hole DNS Configurations.")
     parser.add_argument(
         "--operation",
         "-o",
         type=str,
         required=True,
-        help="Operation To Execute Against PiHole Cluster",
+        help="Available Operations: add-dns-record, delete-dns-record, update-pihole, update-gravity, check-ip-sync",
     )
     parser.add_argument(
         "--hostname",
@@ -32,13 +28,17 @@ def parse_arguments():
     return parser.parse_args()
 
 
-
-
 if __name__ == "__main__":
-    logger.info(f"Starting pihole-manager. Running on platform: {config.platform}.")
+    config = Config(file_abspath=os.path.dirname(os.path.abspath(__file__)))
+    
+    logger = Logging(level=config.log_level)
+    logger = logger.create_logging()
+
+    logger.info(f"pihole-manager started. Running on platform: {config.platform}.")
 
     args = parse_arguments()
-    cluster = ClusterManager(logger=logger, config=config, ssh=ssh)
+    
+    cluster = ClusterManager(logger=logger, config=config)
 
     if str(args.operation).lower() == "add-dns-record":
         if args.hostname and args.ipaddress:
@@ -63,6 +63,16 @@ if __name__ == "__main__":
     elif str(args.operation).lower() == "update-gravity":
         logger.info("Checking For Gravity Updates Across Entire Pihole Cluster.")
         cluster.invoke_gravity_cluster_update()
+
+    elif str(args.operation).lower() == "check-ip-sync":
+        logger.info("Checking if IP is registered in all servers.")
+
+        if args.ipaddress:
+            cluster.check_cluster_ip_sync(ip=args.ipaddress)
+
+        else:
+            logger.error("Missing IP address or Hostname argument. Quitting.")
+            sys.exit(-1)
 
     else:
         logger.error(

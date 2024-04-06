@@ -1,0 +1,20 @@
+pihole:
+  hosts:
+    - host:
+        hostname: pi-hole-01.example.com
+        port: 22
+        username: pi
+        ssh_key: /path/to/.ssh/ssh_key
+    - host:
+        hostname: pi-hole-02.example.com
+        port: 22
+        username: pi
+        ssh_key: /path/to/.ssh/ssh_key
+    - host:
+        hostname: pi-hole-03.example.com
+        port: 22
+        username: pi
+        ssh_key: /path/to/.ssh/ssh_key
+
+logging:
+  log_level: debug
