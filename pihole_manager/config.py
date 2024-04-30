@@ -88,7 +88,7 @@ class Logging:
         Returns:
             _type_: _description_
         """
-        logger = logging.getLogger("'pihole_manager")
+        logger = logging.getLogger("pihole_manager")
         logger.setLevel(self.log_level)
 
         console_handler = logging.StreamHandler(sys.stdout)
