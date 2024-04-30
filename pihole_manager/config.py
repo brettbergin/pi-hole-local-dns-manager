@@ -21,6 +21,7 @@ class Config:
             raise AssertionError("No configuration details found in provided yaml file.")
 
         self.log_level = self._parse_log_level()
+        self.pihole_hosts = self._parse_pihole_hosts()
         self.pihole_hostnames = [
             h["host"]["hostname"] for h in self._parse_pihole_hosts()
         ]
