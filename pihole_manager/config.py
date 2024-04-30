@@ -26,9 +26,7 @@ class Config:
 
         self.log_level = self._parse_log_level()
         self.pihole_hosts = self._parse_pihole_hosts()
-        self.pihole_hostnames = [
-            h["host"]["hostname"] for h in self._parse_pihole_hosts()
-        ]
+        self.pihole_hostnames = self._parse_hostname_scope()
 
     def _determine_platform(self):
         """_summary_
@@ -64,6 +62,16 @@ class Config:
             _type_: _description_
         """
         return self.config_file_content["pihole"]["hosts"]
+    
+    def _parse_hostname_scope(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
+        return [
+            h["host"]["hostname"] for h in self._parse_pihole_hosts()
+        ]
 
 
 class Logging:
