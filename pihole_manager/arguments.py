@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import argparse
 
 
@@ -24,6 +25,13 @@ class Arguments:
             description="SSH Client to Manage Pi Hole DNS Configurations."
         )
         parser.add_argument(
+            "--config",
+            "-c",
+            type=str,
+            required=True,
+            help="YAML Config file for pihole_manager",
+        )
+        parser.add_argument(
             "--operation",
             "-o",
             type=str,
@@ -44,6 +52,14 @@ class Arguments:
             _type_: _description_
         """
         output_args = {}
+
+        if not os.path.exists(args.config):
+            return None
+        
+        if os.path.getsize(args.config) == 0:
+            return None
+        
+        output_args['config_file'] = args.config
 
         if not args.operation in self.supported_operations:
             return None

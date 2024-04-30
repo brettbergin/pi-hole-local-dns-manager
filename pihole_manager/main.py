@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 
 from pihole_manager.arguments import Arguments
@@ -8,24 +7,20 @@ from pihole_manager.config import Logging, Config
 from pihole_manager.cluster import PiHoleCluster
 
 
-if __name__ == "__main__":
-    config = Config(
-        file_abspath=os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "config.yaml"
-        )
-    )
+def main():
+    args = Arguments()
+    options = args.validate_arguments(args.parse_arguments())
+    
+    if not options:
+        print(f"Invalid input arguments have been provided. Please try again.")
+        sys.exit(1)
+
+    config = Config(file_abspath=options['config_file'])
 
     logger = Logging(level=config.log_level)
     logger = logger.create_logging()
 
     logger.info(f"pihole-manager started. Running on platform: {config.platform}.")
-
-    args = Arguments()
-    options = args.validate_arguments(args.parse_arguments())
-
-    if not options:
-        logger.error(f"Invalid input arguments have been provided. Please try again.")
-        sys.exit(1)
 
     cluster = PiHoleCluster(logger=logger, config=config)
 
@@ -50,3 +45,6 @@ if __name__ == "__main__":
 
     logger.info("pihole-manager has finished.")
     sys.exit(0)
+
+if __name__ == "__main__":
+    main()
