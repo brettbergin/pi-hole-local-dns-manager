@@ -55,11 +55,11 @@ class Arguments:
 
         if not os.path.exists(args.config):
             return None
-        
+
         if os.path.getsize(args.config) == 0:
             return None
-        
-        output_args['config_file'] = args.config
+
+        output_args["config_file"] = args.config
 
         if not args.operation in self.supported_operations:
             return None

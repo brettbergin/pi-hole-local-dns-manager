@@ -10,12 +10,12 @@ from pihole_manager.cluster import PiHoleCluster
 def main():
     args = Arguments()
     options = args.validate_arguments(args.parse_arguments())
-    
+
     if not options:
         print(f"Invalid input arguments have been provided. Please try again.")
         sys.exit(1)
 
-    config = Config(file_abspath=options['config_file'])
+    config = Config(file_abspath=options["config_file"])
 
     logger = Logging(level=config.log_level)
     logger = logger.create_logging()
@@ -45,6 +45,7 @@ def main():
 
     logger.info("pihole-manager has finished.")
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
