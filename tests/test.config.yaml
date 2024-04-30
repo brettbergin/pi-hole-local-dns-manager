@@ -1,0 +1,9 @@
+pihole:
+  hosts:
+    - host:
+        hostname: test.example.com
+        port: 22
+        username: test_user
+        ssh_key: /path/to/test/key
+logging:
+  log_level: debug

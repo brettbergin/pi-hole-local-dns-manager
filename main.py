@@ -9,7 +9,11 @@ from pihole_manager.cluster import PiHoleCluster
 
 
 if __name__ == "__main__":
-    config = Config(file_abspath=os.path.dirname(os.path.abspath(__file__)))
+    config = Config(
+        file_abspath=os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "config.yaml"
+        )
+    )
 
     logger = Logging(level=config.log_level)
     logger = logger.create_logging()
