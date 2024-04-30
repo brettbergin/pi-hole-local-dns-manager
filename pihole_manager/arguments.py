@@ -14,7 +14,7 @@ class Arguments:
             "check-record-sync",
         ]
 
-    def parse_arguments(self):
+    def parse_arguments(self, args=None):
         """_summary_
 
         Returns:
@@ -40,7 +40,7 @@ class Arguments:
         )
         parser.add_argument("--hostname", "-n", type=str, help="DNS hostname")
         parser.add_argument("--ipaddress", "-i", type=str, help="IP address")
-        return parser.parse_args()
+        return parser.parse_args(args)
 
     def validate_arguments(self, args):
         """_summary_
@@ -57,6 +57,9 @@ class Arguments:
             return None
 
         if os.path.getsize(args.config) == 0:
+            return None
+        
+        if not (args.config.endswith('.yaml') or args.config.endswith('.yml')):
             return None
 
         output_args["config_file"] = args.config
