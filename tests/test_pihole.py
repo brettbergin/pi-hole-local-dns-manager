@@ -45,9 +45,16 @@ class TestPiHole:
         is_valid = self.pihole.validator.validate(ip=ipaddr, hostname=hostname)
         assert is_valid is False
     
-    def test_validator_evil_case(self):
+    def test_validator_evil_ip_case(self):
         ipaddr = "127.0.0.1 && echo 'here' >> /tmp/flag > /dev/null 2>&1 #" 
         hostname = "localhost"
+
+        is_valid = self.pihole.validator.validate(ip=ipaddr, hostname=hostname)
+        assert is_valid is False, "Failed Command Injection Test Case!!"
+
+    def test_validator_evil_hostname_case(self):
+        ipaddr = "127.0.0.1"
+        hostname = "test.local && echo 'here' >> /tmp/flag > /dev/null 2>&1 #" 
 
         is_valid = self.pihole.validator.validate(ip=ipaddr, hostname=hostname)
         assert is_valid is False, "Failed Command Injection Test Case!!"
