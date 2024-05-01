@@ -62,16 +62,14 @@ class Config:
             _type_: _description_
         """
         return self.config_file_content["pihole"]["hosts"]
-    
+
     def _parse_hostname_scope(self):
         """_summary_
 
         Returns:
             _type_: _description_
         """
-        return [
-            h["host"]["hostname"] for h in self._parse_pihole_hosts()
-        ]
+        return [h["host"]["hostname"] for h in self._parse_pihole_hosts()]
 
 
 class Logging:

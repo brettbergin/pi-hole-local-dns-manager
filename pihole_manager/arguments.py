@@ -58,8 +58,8 @@ class Arguments:
 
         if os.path.getsize(args.config) == 0:
             return None
-        
-        if not (args.config.endswith('.yaml') or args.config.endswith('.yml')):
+
+        if not (args.config.endswith(".yaml") or args.config.endswith(".yml")):
             return None
 
         output_args["config_file"] = args.config
