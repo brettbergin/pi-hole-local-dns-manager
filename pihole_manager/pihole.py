@@ -3,8 +3,10 @@
 import re
 import paramiko
 
+import ipaddress
 
-class Validation:
+
+class PiHoleInstanceValidator:
     def __init__(self, logger) -> None:
         self.logger = logger
 
@@ -19,12 +21,22 @@ class Validation:
         """
         if not isinstance(ip, str):
             return False
-
+        
+        try:
+            ipaddr = ipaddress.ip_address(ip)
+            ipaddr = str(ipaddr)
+            is_valid = True
+            
+        except ValueError as val_err:
+            is_valid = False
+                        
         pattern = re.compile(
-            r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+            r"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
         )
-
-        return bool(pattern.match(ip))
+        if is_valid:
+            return bool(pattern.fullmatch(ip))
+        else:
+            return False
 
     def _validate_hostname(self, hostname):
         """determines the validity of the provided dns hostname by evaluating
@@ -39,11 +51,11 @@ class Validation:
         if not isinstance(hostname, str):
             return False
 
-        pattern = re.compile(r"^([a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]\.?)+$")
+        pattern = re.compile(r"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$")
 
         return bool(pattern.match(hostname))
 
-    def validate(self, ip, hostname=None):
+    def validate(self, ip=None, hostname=None):
         """_summary_
 
         Args:
@@ -56,20 +68,21 @@ class Validation:
         self.logger.debug(f"Validating: {ip} & {hostname}")
         valid_ip = self._validate_ip(ip)
         valid_dns = self._validate_hostname(hostname)
-
-        return True if valid_ip or valid_dns else False
+        self.logger.debug(f"IP Valid: {valid_ip} | HN Valid: {valid_dns}")
+    
+        return True if valid_ip and valid_dns else False
 
 
 class PiHole:
     def __init__(self, hostname, port, username, key_file, logger) -> None:
-        self.validator = Validation(logger)
+        self.validator = PiHoleInstanceValidator(logger)
 
         self.hostname = hostname
         self.port = port
         self.username = username
         self.key_file = key_file
-        self.logger = logger
 
+        self.logger = logger
         self.client = None
 
     def _execute(self, cmd):
