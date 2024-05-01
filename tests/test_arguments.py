@@ -13,7 +13,8 @@ class TestArguments:
                     "config.yaml",
                     "-o",
                     "add-dns-record",
-                    "-n" "test.example.com",
+                    "-n",
+                    "test.example.com",
                     "-i",
                     "192.168.1.1",
                 ]
@@ -39,7 +40,8 @@ class TestArguments:
                     "config.yaml",
                     "-o",
                     "delete-dns-record",
-                    "-n" "test.example.com",
+                    "-n",
+                    "test.example.com",
                     "-i",
                     "192.168.1.1",
                 ]
@@ -65,7 +67,8 @@ class TestArguments:
                     "config.yaml",
                     "-o",
                     "check-record-sync",
-                    "-n" "test.example.com",
+                    "-n",
+                    "test.example.com",
                     "-i",
                     "192.168.1.1",
                 ]
