@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import argparse
 
 
@@ -13,7 +14,7 @@ class Arguments:
             "check-record-sync",
         ]
 
-    def parse_arguments(self):
+    def parse_arguments(self, args=None):
         """_summary_
 
         Returns:
@@ -24,6 +25,13 @@ class Arguments:
             description="SSH Client to Manage Pi Hole DNS Configurations."
         )
         parser.add_argument(
+            "--config",
+            "-c",
+            type=str,
+            required=True,
+            help="YAML Config file for pihole_manager",
+        )
+        parser.add_argument(
             "--operation",
             "-o",
             type=str,
@@ -32,7 +40,7 @@ class Arguments:
         )
         parser.add_argument("--hostname", "-n", type=str, help="DNS hostname")
         parser.add_argument("--ipaddress", "-i", type=str, help="IP address")
-        return parser.parse_args()
+        return parser.parse_args(args)
 
     def validate_arguments(self, args):
         """_summary_
@@ -44,6 +52,17 @@ class Arguments:
             _type_: _description_
         """
         output_args = {}
+
+        if not os.path.exists(args.config):
+            return None
+
+        if os.path.getsize(args.config) == 0:
+            return None
+
+        if not (args.config.endswith(".yaml") or args.config.endswith(".yml")):
+            return None
+
+        output_args["config_file"] = args.config
 
         if not args.operation in self.supported_operations:
             return None

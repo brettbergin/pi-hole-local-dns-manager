@@ -11,20 +11,22 @@ import yaml
 class Config:
     def __init__(self, file_abspath) -> None:
         self.platform = self._determine_platform()
-        self.default_config_filename = "config.yaml"
 
+        self.config_file = file_abspath
         if not os.path.exists(file_abspath):
-            self.config_file = None
-        else:
-            self.config_file = os.path.join(file_abspath, self.default_config_filename)
+            raise FileNotFoundError(
+                f"Unable to open provided config file: {self.config_file}"
+            )
 
         self.config_file_content = self._parse_config_file()
+        if not self.config_file_content:
+            raise AssertionError(
+                "No configuration details found in provided yaml file."
+            )
 
-        self.log_level = self._parse_log_config()
-        self.pihole_hosts = self._parse_pihole_config()
-        self.pihole_hostnames = [
-            h["host"]["hostname"] for h in self._parse_pihole_config()
-        ]
+        self.log_level = self._parse_log_level()
+        self.pihole_hosts = self._parse_pihole_hosts()
+        self.pihole_hostnames = self._parse_hostname_scope()
 
     def _determine_platform(self):
         """_summary_
@@ -42,9 +44,10 @@ class Config:
         """
         with open(self.config_file, "r") as file:
             data = yaml.safe_load(file)
+
         return data
 
-    def _parse_log_config(self):
+    def _parse_log_level(self):
         """_summary_
 
         Returns:
@@ -52,13 +55,21 @@ class Config:
         """
         return self.config_file_content["logging"]["log_level"]
 
-    def _parse_pihole_config(self):
+    def _parse_pihole_hosts(self):
         """_summary_
 
         Returns:
             _type_: _description_
         """
         return self.config_file_content["pihole"]["hosts"]
+
+    def _parse_hostname_scope(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
+        return [h["host"]["hostname"] for h in self._parse_pihole_hosts()]
 
 
 class Logging:
@@ -83,7 +94,7 @@ class Logging:
         Returns:
             _type_: _description_
         """
-        logger = logging.getLogger("'pihole_manager")
+        logger = logging.getLogger("pihole_manager")
         logger.setLevel(self.log_level)
 
         console_handler = logging.StreamHandler(sys.stdout)
