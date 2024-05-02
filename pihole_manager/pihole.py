@@ -28,7 +28,7 @@ class PiHole:
         """
         if self.client is None:
             self.logger.debug("No available pihole client. Cannot execute command.")
-            return
+            return {'error': "No available pihole client. Cannot execute command."}
 
         _, stdout, stderr = self.client.exec_command(cmd)
 
@@ -74,16 +74,21 @@ class PiHole:
             return None
 
         command = f"cat /etc/pihole/custom.list | grep -i '{ip} ' | wc -l"
-
         self.logger.debug(f"Checking for existing ip with command: {command}")
+        
         result = self._execute(command)
-        self.logger.debug(f"Results From Existing IP Check: {result['output']}")
-
+        
         if result is None:
             self.logger.debug(
                 f"Invalid result from command execution, Returning False."
             )
             return False
+        
+        if "error" in result.keys():
+            self.logger.debug(f"Error Fron Existing IP Check: {result['error']}")
+        
+        else:
+            self.logger.debug(f"Results Frin Existing IP Check: {result['output']}")
 
         resp = True if result["output"] == "1\n" else False
         self.logger.debug(f"IP Check in DNS Result: ---> {resp} <---")
