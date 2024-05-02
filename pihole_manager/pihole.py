@@ -14,7 +14,7 @@ class PiHole:
 
         self.logger = logger
         self.client = None
-        
+
         self.validator = PiHoleInstanceValidator(self.logger)
 
     def _execute(self, cmd):
@@ -28,7 +28,7 @@ class PiHole:
         """
         if self.client is None:
             self.logger.debug("No available pihole client. Cannot execute command.")
-            return {'error': "No available pihole client. Cannot execute command."}
+            return {"error": "No available pihole client. Cannot execute command."}
 
         _, stdout, stderr = self.client.exec_command(cmd)
 
@@ -75,18 +75,18 @@ class PiHole:
 
         command = f"cat /etc/pihole/custom.list | grep -i '{ip} ' | wc -l"
         self.logger.debug(f"Checking for existing ip with command: {command}")
-        
+
         result = self._execute(command)
-        
+
         if result is None:
             self.logger.debug(
                 f"Invalid result from command execution, Returning False."
             )
             return False
-        
+
         if "error" in result.keys():
             self.logger.debug(f"Error Fron Existing IP Check: {result['error']}")
-        
+
         else:
             self.logger.debug(f"Results Frin Existing IP Check: {result['output']}")
 

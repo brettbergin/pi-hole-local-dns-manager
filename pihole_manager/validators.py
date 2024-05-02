@@ -19,9 +19,9 @@ class PiHoleInstanceValidator:
         """
         if not isinstance(ip, str):
             return False
-        
+
         try:
-            ipaddr = str(ipaddress.ip_address(ip))            
+            ipaddr = str(ipaddress.ip_address(ip))
             is_valid = True if len(ipaddr) > 0 else False
 
         except ValueError as val_err:
@@ -46,7 +46,9 @@ class PiHoleInstanceValidator:
         if not isinstance(hostname, str):
             return False
 
-        pattern = re.compile(r"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$")
+        pattern = re.compile(
+            r"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$"
+        )
 
         return bool(pattern.fullmatch(hostname))
 
@@ -64,5 +66,5 @@ class PiHoleInstanceValidator:
         valid_ip = self._validate_ip(ip)
         valid_dns = self._validate_hostname(hostname)
         self.logger.debug(f"IP-Valid={valid_ip} | HN-Valid={valid_dns}")
-    
+
         return True if valid_ip and valid_dns else False
