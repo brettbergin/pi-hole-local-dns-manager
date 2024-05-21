@@ -92,7 +92,7 @@ class PiHoleCluster:
                 self.logger.error(f"[-] Failed to add record: {err}")
 
             pihole.client.close()
-            self.logger.debug(f"SSH connection to host: {ph_host} successfully closed.")
+            self.logger.debug(f"SSH connection to host: {ph_host['hostname']} successfully closed.")
         return
 
     def delete_pihole_record(self, ip, host):
@@ -167,7 +167,7 @@ class PiHoleCluster:
 
             except Exception as update_err:
                 self.logger.error(
-                    f"Cannot update gravity server: {ph_host}. Error: {update_err}"
+                    f"Cannot update gravity server: {ph_host['hostname']}. Error: {update_err}"
                 )
         return True
 

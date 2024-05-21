@@ -17,6 +17,36 @@ class PiHole:
 
         self.validator = PiHoleInstanceValidator(self.logger)
 
+    def _get_remote_platform(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
+        try:           
+            command = 'cat /etc/os-release|grep "ID=raspbian"'
+            _, stdout, stderr = self.client.exec_command(command)
+
+            output = str(stdout.read().decode("utf-8"))
+            error = str(stderr.read().decode("utf-8"))
+            
+            if len(error) > 0:
+                self.logger.error(f"Received error: {error}")
+                return {"error": error}
+
+            self.logger.debug(f"Results from {command} : {output}")
+            
+            if output == 'ID=raspbian\n':
+                platform = output.split('=')[1].strip('"').strip("\n")
+                return platform
+
+            else:
+                return None
+        
+        except Exception as err:
+            self.logger.error(f"Unable to fetch platform information. Error={err}")
+            return None
+
     def _execute(self, cmd):
         """_summary_
 
@@ -27,19 +57,27 @@ class PiHole:
             _type_: _description_
         """
         if self.client is None:
-            self.logger.debug("No available pihole client. Cannot execute command.")
+            self.logger.error("No available pihole client. Cannot execute command.")
             return {"error": "No available pihole client. Cannot execute command."}
+
+        platform = self._get_remote_platform()        
+        if platform != "raspbian":
+            self.logger.error("Not a raspbian host. Cannot execute command.")
+            return {'error': "Not a raspbian host. Cannot execute command."}
+
+        else:
+            self.logger.info(f"Executing command on platform: {platform}")
 
         _, stdout, stderr = self.client.exec_command(cmd)
 
         output = stdout.read().decode("utf-8")
         error = stderr.read().decode("utf-8")
+                
+        if len(error) > 0:
+            self.logger.error(f"Received command execution error: {error}")
+            return {"error": error.strip("\n")}
 
-        self.logger.debug(
-            f"Execution Results From PiHole Client: output={output} Error={error}"
-        )
-
-        return {"error": error} if error else {"output": output}
+        return {"output": output.strip("\n")}
 
     def _create_ph_client(self):
         """_summary_
@@ -215,7 +253,7 @@ class PiHole:
             )
             return False
 
-        resp = True if result["output"] == "1\n" else False
+        resp = True if result["output"] == "1" else False
         self.logger.debug(f"Record Check in DNS Result: ---> {resp} <---")
 
         return resp
