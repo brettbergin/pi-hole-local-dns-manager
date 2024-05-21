@@ -36,7 +36,7 @@ class Arguments:
             "-o",
             type=str,
             required=True,
-            help="Available Operations: add-dns-record, delete-dns-record, update-pihole, update-gravity, check-ip-sync",
+            help="Available Operations: add-dns-record, delete-dns-record, update-pihole, update-gravity, check-record-sync",
         )
         parser.add_argument("--hostname", "-n", type=str, help="DNS hostname")
         parser.add_argument("--ipaddress", "-i", type=str, help="IP address")

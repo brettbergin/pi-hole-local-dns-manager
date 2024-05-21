@@ -4,6 +4,9 @@ I have multiple pihole servers in my home lab. I became tired of manually admini
 
 Pi-hole Local DNS Manager (dnsman) is a command-line interface (CLI) tool designed to manage local DNS configurations across a fleet of pihole servers. This utility allows users to easily add, delete, and update DNS records, ensuring their Pi-hole configuration is always up-to-date.
 
+## Constraints
+**Note:** This application currently only supports pihole instances which are deployed onto an actual raspberry pi running RaspbianOS.
+
 If you would like to use this program, checkout the installation section. You will be able to run `dnsman` afterwards.
 
 ## Features
